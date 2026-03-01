@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beyond the Surface — IT Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300&family=DM+Mono:wght@300;400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* ─── RESET & BASE ─────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --navy:   #0a0f1e;
+    --deep:   #071526;
+    --mid:    #0d2340;
+    --ocean:  #0e4272;
+    --sky:    #1a6ea8;
+    --foam:   #c8e6f5;
+    --white:  #eef4f8;
+    --glass:  rgba(255,255,255,0.06);
+    --glass2: rgba(255,255,255,0.10);
+    --border: rgba(200,230,245,0.15);
+    --accent: #4db8e8;
+  }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'Outfit', sans-serif;
+    overflow-x: hidden;
+    cursor: none;
+  }
+
+  /* ─── CUSTOM CURSOR ─────────────────────────────────────── */
+  #cursor {
+    width: 10px; height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9999;
+    transform: translate(-50%,-50%);
+    transition: transform 0.08s ease, width 0.2s, height 0.2s, opacity 0.2s;
+    mix-blend-mode: screen;
+  }
+  #cursor-ring {
+    width: 36px; height: 36px;
+    border: 1px solid rgba(77,184,232,0.4);
+    border-radius: 50%;
+    position: fixed; top: 0; left: 0;
+    pointer-events: none; z-index: 9998;
+    transform: translate(-50%,-50%);
+    transition: transform 0.18s ease, width 0.3s, height 0.3s;
+  }
+
+  /* ─── NAV ────────────────────────────────────────────────── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    z-index: 1000;
+    padding: 1.5rem 3rem;
+    display: flex; justify-content: space-between; align-items: center;
+    transition: background 0.4s, backdrop-filter 0.4s;
+  }
+  nav.scrolled {
+    background: rgba(7,21,38,0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.3rem; font-weight: 300; letter-spacing: 0.12em;
+    color: var(--foam); text-decoration: none;
+  }
+  .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+  .nav-links a {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    color: rgba(200,230,245,0.65); text-decoration: none;
+    transition: color 0.25s;
+    cursor: none;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── HERO ───────────────────────────────────────────────── */
+  #hero {
+    position: relative; height: 100vh; overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .sky-bg {
+    position: absolute; inset: 0;
+    background: linear-gradient(180deg,
+      #060d1b 0%, #0b1d38 30%, #0e3460 55%,
+      #1362a0 72%, #1a85c5 82%, #4ab0d4 90%, #87ceea 100%);
+    z-index: 0;
+  }
+  /* Stars */
+  .stars {
+    position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  }
+  .star {
+    position: absolute; background: #fff; border-radius: 50%;
+    animation: twinkle var(--d,3s) ease-in-out infinite alternate;
+  }
+  @keyframes twinkle { from { opacity: 0.2; } to { opacity: 0.9; } }
+
+  /* Island */
+  #island-scene {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    z-index: 3;
+    will-change: transform;
+  }
+  .ocean-base {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 45vh;
+    background: linear-gradient(180deg, transparent 0%, #0e3460 20%, #071526 80%);
+  }
+
+  /* SVG Waves */
+  .waves-container {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 280px; overflow: hidden; z-index: 4;
+  }
+  .wave-svg { width: 200%; animation: waveShift linear infinite; }
+  .wave1 { animation-duration: 8s; opacity: 0.9; }
+  .wave2 { animation-duration: 11s; opacity: 0.6; margin-top: -30px; }
+  .wave3 { animation-duration: 14s; opacity: 0.4; margin-top: -20px; }
+  @keyframes waveShift { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+  /* Island SVG */
+  #island-svg {
+    position: absolute; bottom: 100px; left: 50%; transform: translateX(-50%);
+    width: min(520px, 80vw); z-index: 5;
+    filter: drop-shadow(0 20px 60px rgba(0,0,0,0.5));
+  }
+
+  /* Photo circle */
+  #photo-circle {
+    position: absolute; bottom: 190px; left: 50%; transform: translateX(-20px);
+    width: 90px; height: 90px; border-radius: 50%;
+    border: 2px solid rgba(200,230,245,0.5);
+    background: linear-gradient(135deg, #1a6ea8, #0a2a50);
+    overflow: hidden; z-index: 10;
+    box-shadow: 0 0 0 6px rgba(30,90,140,0.3), 0 8px 32px rgba(0,0,0,0.5);
+    transition: transform 0.4s cubic-bezier(.34,1.56,.64,1);
+    cursor: none;
+  }
+  #photo-circle:hover { transform: translateX(-20px) scale(1.08); }
+  #photo-circle img { width: 100%; height: 100%; object-fit: cover; }
+  .photo-initials {
+    width: 100%; height: 100%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.8rem; color: var(--foam); letter-spacing: 0.05em;
+  }
+
+  /* Fishing line */
+  #fishing-line {
+    position: absolute; top: 0; left: 50%; transform: translateX(60px);
+    width: 1px; height: 0; background: rgba(200,230,245,0.3);
+    z-index: 6; transition: height 2s ease 1.5s;
+  }
+  #fishing-line.visible { height: 180px; }
+  .bobber {
+    position: absolute; bottom: -6px; left: -4px;
+    width: 9px; height: 9px; border-radius: 50%;
+    background: linear-gradient(135deg, #ff6b6b, #cc3333);
+    animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob { 0%,100%{transform:translateY(0);} 50%{transform:translateY(6px);} }
+
+  /* Hero text */
+  .hero-text {
+    position: relative; z-index: 8;
+    text-align: center; padding: 0 1rem;
+    margin-top: -28vh;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.68rem; letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.8rem;
+    opacity: 0; animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+  .hero-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(3rem, 8vw, 6.5rem);
+    font-weight: 300; line-height: 1.05; letter-spacing: -0.01em;
+    color: var(--white); margin-bottom: 0.5rem;
+    opacity: 0; animation: fadeUp 0.9s ease 0.65s forwards;
+  }
+  .hero-subtitle {
+    font-family: 'Outfit', sans-serif;
+    font-size: clamp(0.85rem, 2vw, 1.05rem);
+    font-weight: 300; letter-spacing: 0.12em;
+    color: var(--foam); opacity: 0.8; margin-bottom: 1rem;
+    opacity: 0; animation: fadeUp 0.9s ease 0.85s forwards;
+  }
+  .hero-purpose {
+    font-size: clamp(0.78rem, 1.4vw, 0.9rem);
+    color: rgba(200,230,245,0.55); max-width: 440px; margin: 0 auto 2.2rem;
+    line-height: 1.7; letter-spacing: 0.02em;
+    opacity: 0; animation: fadeUp 0.9s ease 1.05s forwards;
+  }
+  .cta-group {
+    display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;
+    opacity: 0; animation: fadeUp 0.9s ease 1.25s forwards;
+  }
+  .btn-primary {
+    padding: 0.75rem 1.8rem;
+    background: linear-gradient(135deg, var(--sky), var(--ocean));
+    color: #fff; border: none; border-radius: 2px;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: none; text-decoration: none; display: inline-block;
+    box-shadow: 0 4px 20px rgba(14,66,114,0.5);
+    transition: transform 0.25s, box-shadow 0.25s;
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(14,66,114,0.7); }
+  .btn-ghost {
+    padding: 0.75rem 1.8rem;
+    background: transparent;
+    color: var(--foam); border: 1px solid var(--border);
+    border-radius: 2px;
+    font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase;
+    cursor: none; text-decoration: none; display: inline-block;
+    transition: background 0.25s, transform 0.25s;
+  }
+  .btn-ghost:hover { background: var(--glass2); transform: translateY(-2px); }
+
+  /* Scroll indicator */
+  .scroll-indicator {
+    position: absolute; bottom: 2rem; left: 50%; transform: translateX(-50%);
+    z-index: 9; display: flex; flex-direction: column; align-items: center; gap: 0.4rem;
+    opacity: 0; animation: fadeIn 1s ease 2s forwards;
+    cursor: none;
+  }
+  .scroll-indicator span {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.25em;
+    text-transform: uppercase; color: rgba(200,230,245,0.45);
+  }
+  .scroll-line { width: 1px; height: 40px; background: linear-gradient(to bottom, rgba(200,230,245,0.4), transparent); animation: scrollPulse 2s ease-in-out infinite; }
+  @keyframes scrollPulse { 0%,100%{opacity:0.3} 50%{opacity:1} }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);} }
+  @keyframes fadeIn { from{opacity:0;}to{opacity:1;} }
+
+  /* ─── TRANSITION BAND ───────────────────────────────────── */
+  .depth-transition {
+    height: 120px;
+    background: linear-gradient(to bottom, var(--navy), var(--deep));
+  }
+
+  /* ─── SECTION BASE ──────────────────────────────────────── */
+  section { position: relative; overflow: hidden; }
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.35em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 0.6rem;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .section-label.visible { opacity: 1; transform: none; }
+  .section-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(2.2rem, 5vw, 3.8rem);
+    font-weight: 300; line-height: 1.1; letter-spacing: -0.01em;
+    color: var(--white); margin-bottom: 1.2rem;
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 0.7s 0.1s, transform 0.7s 0.1s;
+  }
+  .section-title.visible { opacity: 1; transform: none; }
+  .section-intro {
+    font-size: 0.95rem; line-height: 1.8; color: rgba(200,230,245,0.65);
+    max-width: 540px; font-weight: 300;
+    opacity: 0; transform: translateY(16px);
+    transition: opacity 0.7s 0.2s, transform 0.7s 0.2s;
+  }
+  .section-intro.visible { opacity: 1; transform: none; }
+
+  /* ─── DEPTH DIVIDER ─────────────────────────────────────── */
+  .depth-divider {
+    display: flex; align-items: center; gap: 1.5rem;
+    margin: 5rem 0 4rem; padding: 0 max(2rem, 6vw);
+  }
+  .depth-line { flex: 1; height: 1px; background: var(--border); }
+  .depth-depth {
+    font-family: 'DM Mono', monospace; font-size: 0.6rem;
+    letter-spacing: 0.3em; color: rgba(200,230,245,0.3);
+  }
+
+  /* ─── SKILLS ─────────────────────────────────────────────── */
+  #skills {
+    background: linear-gradient(180deg, var(--deep) 0%, var(--mid) 100%);
+    padding: 6rem max(2rem, 6vw);
+    position: relative;
+  }
+  .fish-layer {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 0;
+  }
+  .fish {
+    position: absolute;
+    opacity: 0.07; filter: saturate(0.2) blur(0.5px);
+    animation: swimRight linear infinite;
+  }
+  @keyframes swimRight {
+    from { transform: translateX(-120px) scaleX(1); }
+    49.9% { transform: translateX(calc(100vw + 120px)) scaleX(1); }
+    50% { transform: translateX(calc(100vw + 120px)) scaleX(-1); }
+    99.9% { transform: translateX(-120px) scaleX(-1); }
+    100% { transform: translateX(-120px) scaleX(1); }
+  }
+  .skills-header { position: relative; z-index: 2; margin-bottom: 4rem; }
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem; position: relative; z-index: 2;
+  }
+  .skill-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem 1.8rem;
+    backdrop-filter: blur(12px);
+    transition: background 0.3s, transform 0.35s, box-shadow 0.35s;
+    opacity: 0; transform: translateY(30px);
+    position: relative; overflow: hidden;
+  }
+  .skill-card::before {
+    content: ''; position: absolute; top: 0; left: 0;
+    width: 2px; height: 100%;
+    background: linear-gradient(to bottom, transparent, var(--accent), transparent);
+    opacity: 0; transition: opacity 0.35s;
+  }
+  .skill-card:hover::before { opacity: 1; }
+  .skill-card:hover {
+    background: var(--glass2);
+    transform: translateY(-4px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+  }
+  .skill-card.visible { opacity: 1; transform: translateY(0); }
+  .skill-card-depth {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 1rem; opacity: 0.8;
+  }
+  .skill-card h3 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 400; color: var(--foam);
+    margin-bottom: 1.2rem; letter-spacing: 0.01em;
+  }
+  .skill-item {
+    margin-bottom: 1rem; padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(200,230,245,0.07);
+  }
+  .skill-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+  .skill-name {
+    font-size: 0.82rem; font-weight: 500; color: var(--foam);
+    margin-bottom: 0.3rem; letter-spacing: 0.04em;
+  }
+  .skill-desc {
+    font-size: 0.8rem; line-height: 1.7; color: rgba(200,230,245,0.5);
+    font-weight: 300;
+  }
+
+  /* ─── PORTFOLIO ──────────────────────────────────────────── */
+  #portfolio {
+    background: linear-gradient(180deg, var(--mid) 0%, #081a32 100%);
+    padding: 6rem max(2rem, 6vw);
+  }
+  .portfolio-header { margin-bottom: 4rem; }
+  .projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
+  }
+  .project-card {
+    background: var(--glass);
+    border: 1px solid var(--border);
+    border-radius: 4px; overflow: hidden;
+    transition: transform 0.35s, box-shadow 0.35s, background 0.3s;
+    opacity: 0; transform: translateY(30px);
+    cursor: none;
+  }
+  .project-card.visible { opacity: 1; transform: translateY(0); }
+  .project-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 16px 48px rgba(0,0,0,0.4);
+    background: var(--glass2);
+  }
+  .project-card-inner { padding: 2rem 1.8rem; }
+  .project-year {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.62rem; letter-spacing: 0.3em; color: var(--accent); margin-bottom: 0.8rem;
+  }
+  .project-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 1.5rem; font-weight: 400; color: var(--foam);
+    margin-bottom: 0.8rem; line-height: 1.2;
+  }
+  .project-desc {
+    font-size: 0.82rem; line-height: 1.75; color: rgba(200,230,245,0.55);
+    font-weight: 300; margin-bottom: 1.5rem;
+  }
+  .project-link {
+    font-family: 'DM Mono', monospace;
+    font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+    color: var(--accent); text-decoration: none;
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    transition: gap 0.25s;
+  }
+  .project-link:hover { gap: 0.8rem; }
+  .project-link::after { content: '→'; }
+  .project-card-line {
+    height: 2px;
+    background: linear-gradient(to right, var(--ocean), transparent);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform 0.4s ease;
+  }
+  .project-card:hover .project-card-line { transform: scaleX(1); }
+
+  /* ─── ABOUT ──────────────────────────────────────────────── */
+  #about {
+    background: linear-gradient(180deg, #081a32 0%, var(--deep) 50%, var(--navy) 100%);
+    padding: 7rem max(2rem, 6vw);
+    position: relative;
+  }
+  .light-rays {
+    position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 400px; pointer-events: none; z-index: 0;
+    background: conic-gradient(from 270deg at 50% 0%, transparent 75deg,
+      rgba(77,184,232,0.04) 80deg, transparent 85deg,
+      rgba(77,184,232,0.03) 95deg, transparent 100deg,
+      rgba(77,184,232,0.05) 110deg, transparent 115deg);
+    opacity: 0; transition: opacity 1s;
+  }
+  .light-rays.visible { opacity: 1; }
+  .about-layout {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+    align-items: start;
+  }
+  @media (max-width: 768px) {
+    .about-layout { grid-template-columns: 1fr; gap: 3rem; }
+  }
+  .about-text p {
+    font-size: 0.92rem; line-height: 1.9; color: rgba(200,230,245,0.65);
+    font-weight: 300; margin-bottom: 1.4rem;
+  }
+  .about-text p:last-child { margin-bottom: 0; }
+  .about-stats { display: flex; flex-direction: column; gap: 1.5rem; padding-top: 1rem; }
+  .stat-item {
+    border-left: 1px solid var(--border); padding-left: 1.5rem;
+    opacity: 0; transform: translateX(20px);
+    transition: opacity 0.6s, transform 0.6s;
+  }
+  .stat-item.visible { opacity: 1; transform: none; }
+  .stat-num {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 2.8rem; font-weight: 300; color: var(--foam);
+    line-height: 1; margin-bottom: 0.3rem;
+    letter-spacing: -0.02em;
+  }
+  .stat-label {
+    font-size: 0.8rem; color: rgba(200,230,245,0.45); font-weight: 300;
+  }
+  .highlight-word { color: var(--accent); font-style: italic; }
+
+  /* ─── CONTACT ────────────────────────────────────────────── */
+  #contact {
+    background: linear-gradient(180deg, var(--navy) 0%, #0d2340 100%);
+    padding: 7rem max(2rem, 6vw) 5rem;
+    position: relative; overflow: hidden;
+  }
+  .contact-waves {
+    position: absolute; bottom: 0; left: 0; right: 0;
+    height: 120px; opacity: 0.2; pointer-events: none;
+  }
+  .contact-grid {
+    display: grid; grid-template-columns: 1fr 1fr;
+    gap: 5rem; align-items: start;
+    position: relative; z-index: 1;
+  }
+  @media (max-width: 768px) {
+    .contact-grid { grid-template-columns: 1fr; gap: 3rem; }
+  }
+  .contact-cta {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(1.8rem, 4vw, 3rem); font-weight: 300; line-height: 1.3;
+    color: var(--white); margin-bottom: 1.5rem;
+  }
+  .contact-cta em { font-style: italic; color: var(--accent); }
+  .contact-sub {
+    font-size: 0.88rem; color: rgba(200,230,245,0.5); line-height: 1.8; margin-bottom: 2.5rem; font-weight: 300;
+  }
+  .contact-links { display: flex; flex-direction: column; gap: 1.2rem; }
+  .contact-link {
+    display: flex; align-items: center; gap: 1rem;
+    text-decoration: none; color: var(--foam);
+    font-size: 0.88rem; font-weight: 300;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--border); border-radius: 3px;
+    background: var(--glass);
+    transition: background 0.25s, border-color 0.25s, transform 0.25s;
+    cursor: none;
+  }
+  .contact-link:hover {
+    background: var(--glass2);
+    border-color: rgba(77,184,232,0.3);
+    transform: translateX(4px);
+  }
+  .contact-icon {
+    width: 36px; height: 36px; border-radius: 50%;
+    background: linear-gradient(135deg, var(--sky), var(--ocean));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; flex-shrink: 0;
+  }
+  .contact-link-label { font-family: 'DM Mono', monospace; font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--accent); margin-bottom: 0.1rem; }
+
+  /* ─── FOOTER ─────────────────────────────────────────────── */
+  footer {
+    background: var(--deep);
+    padding: 2rem max(2rem, 6vw);
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+    flex-wrap: wrap; gap: 1rem;
+  }
+  .footer-copy {
+    font-family: 'DM Mono', monospace; font-size: 0.62rem;
+    letter-spacing: 0.2em; color: rgba(200,230,245,0.3);
+  }
+  .footer-tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 0.9rem; font-style: italic; color: rgba(200,230,245,0.25);
+  }
+
+  /* ─── MOBILE NAV ─────────────────────────────────────────── */
+  @media (max-width: 640px) {
+    nav { padding: 1.2rem 1.5rem; }
+    .nav-links { display: none; }
+  }
+
+  /* Depth indicator */
+  #depth-indicator {
+    position: fixed; right: 2rem; top: 50%; transform: translateY(-50%);
+    z-index: 500; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+  }
+  .depth-dot {
+    width: 5px; height: 5px; border-radius: 50%;
+    background: rgba(200,230,245,0.25);
+    transition: background 0.3s, transform 0.3s;
+    cursor: none;
+  }
+  .depth-dot.active { background: var(--accent); transform: scale(1.6); }
+  @media (max-width: 768px) { #depth-indicator { display: none; } }
+
+  /* Particle canvas */
+  #particles-canvas {
+    position: fixed; inset: 0; pointer-events: none;
+    z-index: 2; opacity: 0.35;
+  }
+</style>
+</head>
+<body>
+
+<canvas id="particles-canvas"></canvas>
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<nav id="main-nav">
+  <a href="#hero" class="nav-logo">Beyond the Surface</a>
+  <ul class="nav-links">
+    <li><a href="#skills">Skills</a></li>
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+</nav>
+
+<!-- Depth indicator -->
+<div id="depth-indicator">
+  <div class="depth-dot active" data-section="hero"></div>
+  <div class="depth-dot" data-section="skills"></div>
+  <div class="depth-dot" data-section="portfolio"></div>
+  <div class="depth-dot" data-section="about"></div>
+  <div class="depth-dot" data-section="contact"></div>
+</div>
+
+<!-- ═══════════════════════════════ HERO ═══════════════════ -->
+<section id="hero">
+  <div class="sky-bg"></div>
+  <div class="stars" id="stars-container"></div>
+
+  <div class="hero-text">
+    <p class="hero-eyebrow">Portfolio — Beyond the Surface</p>
+    <h1 class="hero-name">Nazriel Sakhiy Kurniadi</h1>
+    <p class="hero-subtitle" style="opacity:0;animation:fadeUp 0.9s ease 0.85s forwards">Aspiring IT Specialist &nbsp;|&nbsp; Strategic Problem Solver</p>
+    <p class="hero-purpose">This website is created to promote personal skills and professional readiness in Information Technology.</p>
+    <div class="cta-group">
+      <a href="#skills" class="btn-primary">Dive Deeper</a>
+      <a href="#contact" class="btn-ghost">Download Resume</a>
+    </div>
+  </div>
+
+  <div id="island-scene">
+    <div class="ocean-base"></div>
+
+    <!-- Island SVG -->
+    <svg id="island-svg" viewBox="0 0 520 220" xmlns="http://www.w3.org/2000/svg">
+      <!-- Sand island -->
+      <ellipse cx="260" cy="185" rx="180" ry="38" fill="#c8a86b" opacity="0.9"/>
+      <ellipse cx="260" cy="178" rx="160" ry="28" fill="#d4b07a"/>
+      <!-- Beach shadow -->
+      <ellipse cx="260" cy="198" rx="170" ry="18" fill="#0e3460" opacity="0.6"/>
+      <!-- Coconut tree trunk -->
+      <path d="M230,178 Q225,140 218,110 Q212,80 208,50" stroke="#5a3e1b" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <!-- Palm fronds -->
+      <path d="M208,50 Q185,30 155,38" stroke="#2d5a27" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M208,50 Q190,20 200,0" stroke="#2d5a27" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M208,50 Q225,25 250,30" stroke="#2d5a27" stroke-width="4" fill="none" stroke-linecap="round"/>
+      <path d="M208,50 Q195,38 168,50" stroke="#3a7a30" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <path d="M208,50 Q228,38 242,48" stroke="#3a7a30" stroke-width="3" fill="none" stroke-linecap="round"/>
+      <!-- Coconuts -->
+      <circle cx="212" cy="56" r="5" fill="#7a5a2a"/>
+      <circle cx="205" cy="60" r="4" fill="#6a4e22"/>
+      <!-- Fishing figure (minimal silhouette) -->
+      <circle cx="295" cy="160" r="7" fill="#1a2a40"/>
+      <line x1="295" y1="167" x2="295" y2="188" stroke="#1a2a40" stroke-width="3" stroke-linecap="round"/>
+      <line x1="295" y1="175" x2="285" y2="182" stroke="#1a2a40" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="295" y1="175" x2="305" y2="172" stroke="#1a2a40" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="295" y1="188" x2="288" y2="198" stroke="#1a2a40" stroke-width="2.5" stroke-linecap="round"/>
+      <line x1="295" y1="188" x2="302" y2="198" stroke="#1a2a40" stroke-width="2.5" stroke-linecap="round"/>
+      <!-- Fishing rod -->
+      <line x1="305" y1="172" x2="350" y2="140" stroke="#2a3a50" stroke-width="2" stroke-linecap="round"/>
+      <line x1="350" y1="140" x2="352" y2="165" stroke="rgba(200,230,245,0.4)" stroke-width="1"/>
+      <circle cx="352" cy="167" r="3" fill="#e05555"/>
+    </svg>
+
+    <!-- Photo circle -->
+    <div id="photo-circle">
+      <img src="D:\Downloads\webcam-toy-photo3 (1).jpg" alt="Nazriel Sakhiy Kurniadi">YN</div>
+    </div>
+
+    <!-- Fishing line decoration -->
+    <div id="fishing-line"><div class="bobber"></div></div>
+
+    <!-- Waves -->
+    <div class="waves-container">
+      <svg class="wave-svg wave1" viewBox="0 0 1440 80" preserveAspectRatio="none" height="80">
+        <path d="M0,40 C180,80 360,0 540,40 C720,80 900,0 1080,40 C1260,80 1350,20 1440,40 L1440,80 L0,80 Z" fill="#0e3460" opacity="0.9"/>
+        <path d="M1440,40 C1260,80 1080,0 900,40 C720,80 540,0 360,40 C180,80 90,20 0,40 L0,80 L1440,80 Z" fill="#0a2850" opacity="0.7"/>
+      </svg>
+      <svg class="wave-svg wave2" viewBox="0 0 1440 80" preserveAspectRatio="none" height="70">
+        <path d="M0,30 C200,70 400,0 600,30 C800,60 1000,10 1200,35 C1320,50 1380,20 1440,30 L1440,80 L0,80 Z" fill="#071526" opacity="0.8"/>
+      </svg>
+      <svg class="wave-svg wave3" viewBox="0 0 1440 80" preserveAspectRatio="none" height="60">
+        <path d="M0,50 C240,20 480,60 720,40 C960,20 1200,55 1440,35 L1440,80 L0,80 Z" fill="#04101e" opacity="0.9"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="scroll-indicator">
+    <span>Scroll to descend</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ SKILLS ════════════════════ -->
+<section id="skills">
+  <div class="fish-layer" id="fish-layer"></div>
+
+  <div class="depth-divider">
+    <div class="depth-line"></div>
+    <div class="depth-depth">depth: 12m — skill layer</div>
+    <div class="depth-line"></div>
+  </div>
+
+  <div class="skills-header" style="padding: 0 max(2rem,6vw)">
+    <p class="section-label">Technical Proficiencies</p>
+    <h2 class="section-title">Skills &amp; Competencies</h2>
+    <p class="section-intro">Each layer of depth corresponds to a different category of competency — from visible communication abilities to the structured reasoning that drives technical problem-solving.</p>
+  </div>
+
+  <div class="skills-grid" style="padding: 0 max(2rem,6vw) 6rem">
+
+    <div class="skill-card">
+      <div class="skill-card-depth">Surface Layer — Visibility</div>
+      <h3>Communication &amp; Leadership</h3>
+      <div class="skill-item">
+        <div class="skill-name">Professional Communication</div>
+        <div class="skill-desc">Ability to present complex technical concepts to non-technical audiences through structured written documentation, verbal briefings, and organized slide presentations, ensuring clarity across diverse stakeholder groups.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Team Leadership</div>
+        <div class="skill-desc">Experience coordinating project teams by assigning responsibilities based on individual strengths, setting measurable milestones, and maintaining alignment toward shared objectives in both academic and collaborative contexts.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Presentation Design</div>
+        <div class="skill-desc">Proficiency in constructing high-quality visual presentations using tools such as Canva and PowerPoint, applying principles of typographic hierarchy, color theory, and information architecture to enhance audience comprehension.</div>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-card-depth">Mid Layer — Analysis</div>
+      <h3>Technical Thinking</h3>
+      <div class="skill-item">
+        <div class="skill-name">Analytical Thinking</div>
+        <div class="skill-desc">Capacity to decompose complex technical problems into structured components, evaluate multiple solution pathways, and apply systematic decision-making frameworks informed by available data and logical reasoning.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Troubleshooting</div>
+        <div class="skill-desc">Methodical approach to diagnosing hardware, software, and network issues by isolating variables, interpreting error outputs, and applying step-by-step resolution strategies aligned with industry-standard diagnostic procedures.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Project Organization</div>
+        <div class="skill-desc">Ability to plan, document, and track multi-stage technical projects using structured task management approaches, ensuring that deliverables remain on schedule and that all team contributions are properly coordinated.</div>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-card-depth">Deep Layer — Mindset</div>
+      <h3>Core IT Competencies</h3>
+      <div class="skill-item">
+        <div class="skill-name">Problem Solving</div>
+        <div class="skill-desc">Demonstrated ability to approach novel or undefined technical challenges with structured curiosity, combining logical deduction, research, and iterative testing to arrive at effective, sustainable solutions.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Logical Reasoning</div>
+        <div class="skill-desc">Strong foundational understanding of computational logic, boolean operations, and structured algorithmic thinking, enabling the design of reliable and efficient solutions across software and systems contexts.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Continuous Learning</div>
+        <div class="skill-desc">Active commitment to staying current with evolving technologies and industry developments through self-directed study, online coursework, and engagement with technical communities relevant to the IT discipline.</div>
+      </div>
+    </div>
+
+    <div class="skill-card">
+      <div class="skill-card-depth">Applied Layer — Tools</div>
+      <h3>Technical Toolkit</h3>
+      <div class="skill-item">
+        <div class="skill-name">Web Development</div>
+        <div class="skill-desc">Working knowledge of HTML5, CSS3, and foundational JavaScript for building structured, responsive web interfaces, including application of modern layout systems such as CSS Grid and Flexbox.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Networking Fundamentals</div>
+        <div class="skill-desc">Understanding of core networking concepts including TCP/IP protocols, IP addressing and subnetting, LAN/WAN architecture, and basic network security principles as applied in enterprise and educational environments.</div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-name">Data &amp; Documentation</div>
+        <div class="skill-desc">Proficiency in creating structured technical documents, data tables, and reports using productivity tools, with attention to accuracy, formatting standards, and professional presentation appropriate to IT environments.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ PORTFOLIO ═════════════════ -->
+<section id="portfolio">
+  <div class="depth-divider">
+    <div class="depth-line"></div>
+    <div class="depth-depth">depth: 40m — portfolio layer</div>
+    <div class="depth-line"></div>
+  </div>
+
+  <div class="portfolio-header" style="padding: 0 max(2rem,6vw)">
+    <p class="section-label">Selected Work</p>
+    <h2 class="section-title">Portfolio</h2>
+    <p class="section-intro">A curated selection of projects that demonstrate applied technical ability, structured problem-solving, and professional communication across different domains of Information Technology.</p>
+  </div>
+
+  <div class="projects-grid" style="padding: 0 max(2rem,6vw) 6rem">
+
+    <div class="project-card">
+      <div class="project-card-inner">
+        <div class="project-year">2025</div>
+        <h3 class="project-title">Beyond the Surface — Interactive Portfolio</h3>
+        <p class="project-desc">A production-level personal portfolio website built on an ocean-depth narrative metaphor. Demonstrates competency in modern front-end architecture using React, GSAP scroll-triggered animations, Three.js depth effects, and performance-optimized component design. Reflects the ability to conceptualize, design, and implement an advanced interactive digital experience.</p>
+        <a href="#" class="project-link">View Project</a>
+      </div>
+      <div class="project-card-line"></div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-card-inner">
+        <div class="project-year">2025</div>
+        <h3 class="project-title">Network Infrastructure Design</h3>
+        <p class="project-desc">A comprehensive network topology and infrastructure design project that documents the planning, IP addressing scheme, device selection rationale, and security considerations for a simulated small-to-medium enterprise environment. Demonstrates analytical thinking, technical documentation, and structured problem-solving applied to real-world networking scenarios.</p>
+        <a href="#" class="project-link">View Project</a>
+      </div>
+      <div class="project-card-line"></div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-card-inner">
+        <div class="project-year">2024</div>
+        <h3 class="project-title">IT Systems Proposal Presentation</h3>
+        <p class="project-desc">A professionally structured slide presentation proposing an IT system upgrade for a hypothetical organization, covering hardware requirements, cost analysis, implementation timeline, and risk mitigation strategies. Designed in Canva to demonstrate both technical planning ability and professional communication skills relevant to IT project management contexts.</p>
+        <a href="#" class="project-link">View Presentation</a>
+      </div>
+      <div class="project-card-line"></div>
+    </div>
+
+    <div class="project-card">
+      <div class="project-card-inner">
+        <div class="project-year">2024</div>
+        <h3 class="project-title">Troubleshooting Case Study</h3>
+        <p class="project-desc">A documented case study analyzing a real system failure scenario and detailing the diagnostic methodology, root cause identification process, resolution steps taken, and preventive measures recommended. Demonstrates structured troubleshooting competency, technical writing clarity, and the application of systematic reasoning to resolve complex IT incidents.</p>
+        <a href="#" class="project-link">Read Case Study</a>
+      </div>
+      <div class="project-card-line"></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ ABOUT ═════════════════════ -->
+<section id="about">
+  <div class="light-rays" id="light-rays"></div>
+
+  <div class="depth-divider">
+    <div class="depth-line"></div>
+    <div class="depth-depth">depth: 90m — identity layer</div>
+    <div class="depth-line"></div>
+  </div>
+
+  <div style="padding: 0 max(2rem,6vw)">
+    <p class="section-label">The Deeper Context</p>
+    <h2 class="section-title">About Me</h2>
+  </div>
+
+  <div class="about-layout" style="padding: 2rem max(2rem,6vw) 6rem">
+    <div class="about-text">
+      <p>My engagement with Information Technology began not as a casual interest, but as a recognition that the discipline offers a structured framework for approaching the complexity of modern systems. The ability to decompose problems, apply logical frameworks, and build solutions that function reliably under real-world conditions represents a form of intellectual discipline that I find deeply compelling.</p>
+      <p>Throughout my academic development, I have invested consistently in building both the technical foundations and the professional competencies that define readiness for higher education and industry environments. This includes not only the hard skills of networking, web development, and systems administration, but the equally important capacities for clear communication, project organization, and adaptive learning.</p>
+      <p>The metaphor this website is built on — descending through layers of depth — reflects how I approach professional growth. The surface is visible identity and communication. The middle layers are analytical capability and technical execution. The deepest layer is <span class="highlight-word">mindset</span>: the commitment to continuous learning, structured problem-solving, and intellectual honesty that sustains competence in a field defined by constant evolution.</p>
+      <p>I am actively pursuing higher education in Information Technology with the goal of building a career that bridges technical depth with strategic thinking. I am particularly interested in the intersection of systems architecture, network security, and the organizational challenge of translating complex technical decisions into clear strategic outcomes.</p>
+    </div>
+    <div class="about-stats">
+      <div class="stat-item">
+        <div class="stat-num">3+</div>
+        <div class="stat-label">Years studying IT fundamentals and development</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">10+</div>
+        <div class="stat-label">Technical projects completed across multiple domains</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Commitment to continuous professional learning</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">1</div>
+        <div class="stat-label">Clear strategic direction toward IT specialization</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════ CONTACT ═══════════════════ -->
+<section id="contact">
+  <div class="depth-divider">
+    <div class="depth-line"></div>
+    <div class="depth-depth">depth: 0m — resurface</div>
+    <div class="depth-line"></div>
+  </div>
+
+  <div class="contact-grid" style="padding: 0 max(2rem,6vw) 5rem">
+    <div>
+      <p class="section-label">Connect &amp; Collaborate</p>
+      <h2 class="contact-cta">Download my resume<br>and <em>connect</em> with me<br>on LinkedIn.</h2>
+      <p class="contact-sub">Whether you're reviewing this for academic assessment, professional evaluation, or potential collaboration — I welcome the opportunity to demonstrate how my skills and mindset align with your requirements.</p>
+      <a href="#" class="btn-primary" style="text-decoration:none">Download Resume (PDF)</a>
+    </div>
+    <div class="contact-links">
+      <a href="https://www.linkedin.com/in/nazriel-sakhiy-kurniadi-2278833ab/" class="contact-link" target="_blank">
+        <div class="contact-icon">in</div>
+        <div>
+          <div class="contact-link-label">LinkedIn</div>
+          <div>LinkedIn</div>
+        </div>
+      </a>
+      <a href="mailto:nazzxsk@gmail.com" class="contact-link">
+        <div class="contact-icon">@</div>
+        <div>
+          <div class="contact-link-label">Email</div>
+          <div>Email</div>
+        </div>
+      </a>
+      <a href="https://github.com/Kaezshii" class="contact-link" target="_blank">
+        <div class="contact-icon" style="font-size:0.8rem">gh</div>
+        <div>
+          <div class="contact-link-label">GitHub</div>
+          <div>Github</div>
+        </div>
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer waves -->
+  <svg class="contact-waves" viewBox="0 0 1440 120" preserveAspectRatio="none">
+    <path d="M0,60 C360,20 720,100 1080,60 C1260,40 1380,70 1440,60 L1440,120 L0,120 Z" fill="#0e4272"/>
+    <path d="M0,80 C240,40 480,100 720,70 C960,40 1200,90 1440,75 L1440,120 L0,120 Z" fill="#071526"/>
+  </svg>
+</section>
+
+<footer>
+  <div class="footer-copy">© 2025 — Beyond the Surface Portfolio</div>
+  <div class="footer-tagline">Built to explore what lies beneath the obvious.</div>
+</footer>
+
+<script>
+/* ─── CURSOR ─────────────────────────────────────────────── */
+const cursor = document.getElementById('cursor');
+const ring = document.getElementById('cursor-ring');
+let mx = 0, my = 0, rx = 0, ry = 0;
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+(function animateCursor() {
+  cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+  rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+  requestAnimationFrame(animateCursor);
+})();
+document.querySelectorAll('a,button').forEach(el => {
+  el.addEventListener('mouseenter', () => { cursor.style.width='20px'; cursor.style.height='20px'; ring.style.width='56px'; ring.style.height='56px'; });
+  el.addEventListener('mouseleave', () => { cursor.style.width='10px'; cursor.style.height='10px'; ring.style.width='36px'; ring.style.height='36px'; });
+});
+
+/* ─── STARS ──────────────────────────────────────────────── */
+const starsEl = document.getElementById('stars-container');
+for (let i = 0; i < 80; i++) {
+  const s = document.createElement('div'); s.className = 'star';
+  const size = Math.random() * 2.5 + 0.5;
+  s.style.cssText = `width:${size}px;height:${size}px;top:${Math.random()*65}%;left:${Math.random()*100}%;--d:${2+Math.random()*4}s;animation-delay:${-Math.random()*4}s`;
+  starsEl.appendChild(s);
+}
+
+/* ─── FISHING LINE ───────────────────────────────────────── */
+setTimeout(() => document.getElementById('fishing-line').classList.add('visible'), 1800);
+
+/* ─── NAV SCROLL ─────────────────────────────────────────── */
+const nav = document.getElementById('main-nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+/* ─── PARALLAX ISLAND ────────────────────────────────────── */
+const islandScene = document.getElementById('island-scene');
+window.addEventListener('scroll', () => {
+  const t = window.scrollY;
+  islandScene.style.transform = `translateY(${t * 0.55}px)`;
+  islandScene.style.opacity = Math.max(0, 1 - t / 600);
+});
+
+/* ─── PHOTO PARALLAX ─────────────────────────────────────── */
+const heroSection = document.getElementById('hero');
+const photoCircle = document.getElementById('photo-circle');
+heroSection.addEventListener('mousemove', e => {
+  const rect = heroSection.getBoundingClientRect();
+  const x = (e.clientX - rect.width / 2) / rect.width * 12;
+  const y = (e.clientY - rect.height / 2) / rect.height * 8;
+  photoCircle.style.transform = `translateX(calc(-50% + ${x}px)) translateY(${y}px)`;
+});
+
+/* ─── SCROLL ANIMATIONS ──────────────────────────────────── */
+const observerOptions = { threshold: 0.15 };
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) entry.target.classList.add('visible');
+  });
+}, observerOptions);
+document.querySelectorAll('.section-label,.section-title,.section-intro,.skill-card,.project-card,.stat-item').forEach((el, i) => {
+  if (el.classList.contains('skill-card') || el.classList.contains('project-card') || el.classList.contains('stat-item')) {
+    el.style.transitionDelay = (i % 4) * 0.1 + 's';
+  }
+  observer.observe(el);
+});
+
+/* Light rays */
+const lightRays = document.getElementById('light-rays');
+new IntersectionObserver(([e]) => { if(e.isIntersecting) e.target.classList.add('visible'); }, {threshold:0.3}).observe(lightRays);
+
+/* ─── DEPTH DOTS ─────────────────────────────────────────── */
+const sections = ['hero','skills','portfolio','about','contact'];
+const dots = document.querySelectorAll('.depth-dot');
+const secEls = sections.map(id => document.getElementById(id));
+function updateDots() {
+  const sy = window.scrollY + window.innerHeight / 2;
+  let active = 0;
+  secEls.forEach((s, i) => { if (s && s.offsetTop <= sy) active = i; });
+  dots.forEach((d, i) => d.classList.toggle('active', i === active));
+}
+window.addEventListener('scroll', updateDots, { passive: true });
+
+/* ─── FISH ───────────────────────────────────────────────── */
+const fishLayer = document.getElementById('fish-layer');
+const fishPaths = [
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" fill="white"><path d="M45,15 C45,15 60,5 60,15 C60,25 45,15 45,15Z"/><ellipse cx="22" cy="15" rx="22" ry="10"/><circle cx="38" cy="12" r="2.5" fill="white" opacity="0.6"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 50 25" fill="white"><path d="M38,12 C38,12 50,4 50,12 C50,20 38,12 38,12Z"/><ellipse cx="18" cy="12" rx="18" ry="8"/></svg>`,
+  `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 70 35" fill="white"><path d="M55,17 C55,17 70,6 70,17 C70,28 55,17 55,17Z"/><ellipse cx="27" cy="17" rx="27" ry="12"/><circle cx="47" cy="14" r="3" fill="white" opacity="0.5"/></svg>`,
+];
+for (let i = 0; i < 8; i++) {
+  const fish = document.createElement('div');
+  fish.className = 'fish';
+  const size = 30 + Math.random() * 50;
+  const top = 10 + Math.random() * 80;
+  const dur = 20 + Math.random() * 30;
+  const delay = -Math.random() * dur;
+  fish.style.cssText = `top:${top}%;width:${size}px;animation-duration:${dur}s;animation-delay:${delay}s`;
+  fish.innerHTML = fishPaths[i % fishPaths.length];
+  fishLayer.appendChild(fish);
+}
+
+/* ─── PARTICLES ──────────────────────────────────────────── */
+const canvas = document.getElementById('particles-canvas');
+const ctx = canvas.getContext('2d');
+const particles = [];
+function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+resizeCanvas(); window.addEventListener('resize', resizeCanvas);
+for (let i = 0; i < 55; i++) {
+  particles.push({
+    x: Math.random() * window.innerWidth,
+    y: Math.random() * window.innerHeight,
+    r: Math.random() * 1.5 + 0.3,
+    vx: (Math.random() - 0.5) * 0.15,
+    vy: -Math.random() * 0.3 - 0.05,
+    a: Math.random() * 0.5 + 0.1
+  });
+}
+function animateParticles() {
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  const scrollFrac = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+  const alpha = Math.min(0.5, scrollFrac * 1.5);
+  particles.forEach(p => {
+    p.x += p.vx; p.y += p.vy;
+    if (p.y < -5) { p.y = canvas.height + 5; p.x = Math.random() * canvas.width; }
+    if (p.x < 0 || p.x > canvas.width) p.vx *= -1;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+    ctx.fillStyle = `rgba(77,184,232,${p.a * alpha})`;
+    ctx.fill();
+  });
+  requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* ─── SMOOTH ANCHOR SCROLL ───────────────────────────────── */
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) { e.preventDefault(); target.scrollIntoView({ behavior: 'smooth' }); }
+  });
+});
+</script>
+</body>
+</html>
